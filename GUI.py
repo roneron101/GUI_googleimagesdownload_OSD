@@ -6,12 +6,19 @@ from tkinter import messagebox
 import os
 import sys
 
+#--second feature//History
+def word_hist(word_array):
+    f = open("History.txt","w+")
+    for word in word_array:
+        f.write("%s\n"%word)
+    f.close()
 
 #-----first feature//GUI
 def Main(): #GUI
     global format_list
     global color_list
     global size_list
+    global searchHistory
     global SearchChoice
     global Dict
     global MainCounter
@@ -28,14 +35,21 @@ def Main(): #GUI
     entry_EntryChoice = Entry(Main,width=20)
     entry_EntryChoice.grid(row=0, column=1 , pady=5, sticky='ew')
     
-    
+    #second row
+    searchHistoryChoice = StringVar(Main)         
+    empty_file = file_check("History.txt")    
+    if empty_file==False:   
+        searchHistoryChoice.set(searchHistory[0])                                                         
+        label_history = Label(Main,text="History: ").grid(row=1,column=0,pady=5)
+        History = OptionMenu(Main,searchHistoryChoice,*searchHistory)        #drop down button for searched word
+        History.grid(row=1,column=1, sticky='ew')
 
     #third row
     SearchOption = Label(Main,text="Search by: ").grid(row=2, column=0,pady=5,sticky=W)    
-    SearchChoice = ["entry","history"]                                  
+    SearchChoice = ["entry","history"]                                  #list of possible input option
     Choice = StringVar(Main)                                                                        
-    Choice.set(SearchChoice[0])                                     
-    dropdown_choice = OptionMenu(Main, Choice,*SearchChoice)    
+    Choice.set(SearchChoice[0])                                     #default input option -> Entry
+    dropdown_choice = OptionMenu(Main, Choice,*SearchChoice)       #drop down button
     dropdown_choice.grid(row=2,column=1,sticky='ew')
 
     #fourth row
@@ -79,6 +93,8 @@ def Main(): #GUI
 
     def run():
         global Dict
+        global searchHistory
+        global SearchChoice
         try:
             fetch_choice = Choice.get()
             keywords = ""
@@ -91,7 +107,11 @@ def Main(): #GUI
                 else:
                         Parameter_Dictionary("keywords",entry,Dict)
             else:
+                searchHistoryVariable = searchHistoryChoice.get()
+                if searchHistoryVariable =="":
+                        messagebox.showinfo("No History")
                         return
+                Parameter_Dictionary("keywords",searchHistoryVariable,Dict)
                     
             #store Limit
             LimitEntry = entry_limit.get()
@@ -110,6 +130,13 @@ def Main(): #GUI
             check_box_store(Size, "size", SizeEntry, Dict)
 
             googleimage_download(Dict)
+
+            if fetch_choice == SearchChoice[0]:
+                searchHistory.insert(0,keyword)
+                word_hist(searchHistory)
+                searchHistory = add_Searchhistory()
+                History = OptionMenu(Main,searchHistoryChoice,*searchHistory)
+                History.grid(row=1,column=1, sticky='ew')
             
             
         except ValueError:
@@ -143,7 +170,18 @@ def googleimage_download(dictionary):
     arguments = Dict
     paths = response.download(arguments)
 
-
+def add_Searchhistory():
+    keyword_hist = []
+    w = open('History.txt',"a+")
+    w = open('History.txt',"r")
+    counter = 1
+    for x in w:
+        if counter<= 200:
+            keyword_hist.append(x.rstrip("\n").lower())
+            keyword_hist = list(set(keyword_hist))
+            counter+=1
+    w.close()
+    return keyword_hist
 
 def existing_file(file_path):
     if os.path.isfile(file_path):
@@ -157,6 +195,7 @@ def file_check(txt_file):
 
 
     
+    
 
 
 Dict = {}
@@ -166,5 +205,6 @@ format_list=["jpg", "gif", "png", "bmp", "svg", "webp", "ico"]
 color_list= ["red", "orange", "yellow", "green", "teal", "blue", "purple", "pink", "white", "gray", "black"]
 size_list= ["large","medium","icon",">400*300",">640*480",">800*600",">1024*768",">2MP",">4MP",">6MP",">8MP",">10MP",">12MP",">15MP",">20MP",">40MP",">70MP"]
 
+searchHistory = add_Searchhistory()
     
 Main()
