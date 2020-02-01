@@ -22,6 +22,7 @@ def Main(): #GUI
     global SearchChoice
     global Dict
     global MainCounter
+    
 
     #-----set GUI
     Main = Tk()
@@ -96,17 +97,24 @@ def Main(): #GUI
         global Dict
         global searchHistory
         global SearchChoice
+        global banned_words
         try:
             fetch_choice = Choice.get()
             keywords = ""
             if fetch_choice == SearchChoice[0]:
-                entry = entry_EntryChoice.get().lower()
+                entry = entry_EntryChoice.get().lower()#get the entry by the user, .lower() translates the letters into lowercase
                 keyword = entry
-                if keyword =="":
-                        messagebox.showinfo("no input for keyword")
-                        return
+                badcheck = word_ban_check(entry,banned_words)
+                if badcheck == True:
+                    
+                    if keyword =="":
+                            messagebox.showinfo("no input for keyword")
+                            return
+                    else:
+                            Parameter_Dictionary("keywords",entry,Dict)
                 else:
-                        Parameter_Dictionary("keywords",entry,Dict)
+                    messagebox.showinfo("Banned Word Searched")
+                    return
             else:
                 searchHistoryVariable = searchHistoryChoice.get()
                 if searchHistoryVariable =="":
@@ -146,6 +154,16 @@ def Main(): #GUI
     #-----eighth row//Enter Button
     enterEntry = Button(Main, text= "Enter", command=run,bg="yellow")
     enterEntry.grid(row=7,column=1,columnspan=2,sticky='nesw')
+
+#--Third Feature//Ban Words to be searched
+def banned_words(txt_file):
+    keyword_hist = []
+    b = open(txt_file, "r+")
+    for words in b:
+        keyword_hist.append(words.rstrip("\n").lower())
+        keyword_hist = list(set(keyword_hist))
+    b.close()
+    return keyword_hist
 
         
 
@@ -188,17 +206,18 @@ def add_Searchhistory():
     w.close()
     return keyword_hist
 
-#check if a file exist 
-def existing_file(file_path):
-    if os.path.isfile(file_path):
-        return True
-    return False
-
 #check if the file given is empty or not
 def file_check(txt_file):
     if  os.stat(txt_file).st_size==0:
         return True
     return False
+
+#To check if the entry violates the word_ban
+def word_ban_check(keyword,keyword_hist):
+    for badword in keyword_hist:
+        if badword == keyword.lower():
+            return False
+        return True
 
 
     
@@ -213,5 +232,6 @@ color_list= ["red", "orange", "yellow", "green", "teal", "blue", "purple", "pink
 size_list= ["large","medium","icon",">400*300",">640*480",">800*600",">1024*768",">2MP",">4MP",">6MP",">8MP",">10MP",">12MP",">15MP",">20MP",">40MP",">70MP"]
 
 searchHistory = add_Searchhistory()
+banned_words = banned_words("Word_Ban.txt")
     
 Main()
