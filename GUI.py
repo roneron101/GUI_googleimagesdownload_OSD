@@ -23,6 +23,7 @@ def Main(): #GUI
     global Dict
     global MainCounter
 
+    #-----set GUI
     Main = Tk()
     Main.title("Google_image_download")
     Main.geometry('500x400')
@@ -30,29 +31,29 @@ def Main(): #GUI
     Main.tk.call('tk', 'scaling', 1.4)
 
     
-    #first row 
+    #-----first row// Entry Box
     EntryChoice = Label(Main, text="Keyword: ").grid(row=0, sticky=W, pady=5)
     entry_EntryChoice = Entry(Main,width=20)
     entry_EntryChoice.grid(row=0, column=1 , pady=5, sticky='ew')
     
-    #second row
+    #-----second row//History dropdown
     searchHistoryChoice = StringVar(Main)         
     empty_file = file_check("History.txt")    
     if empty_file==False:   
         searchHistoryChoice.set(searchHistory[0])                                                         
-        label_history = Label(Main,text="History: ").grid(row=1,column=0,pady=5)
-        History = OptionMenu(Main,searchHistoryChoice,*searchHistory)        #drop down button for searched word
+        label_history = Label(Main,text="History: ").grid(row=1,sticky=W,pady=5)
+        History = OptionMenu(Main,searchHistoryChoice,*searchHistory)   
         History.grid(row=1,column=1, sticky='ew')
 
-    #third row
+    #-----third row//Search by option dropdown
     SearchOption = Label(Main,text="Search by: ").grid(row=2, column=0,pady=5,sticky=W)    
-    SearchChoice = ["entry","history"]                                  #list of possible input option
+    SearchChoice = ["entry","history"]                              
     Choice = StringVar(Main)                                                                        
-    Choice.set(SearchChoice[0])                                     #default input option -> Entry
-    dropdown_choice = OptionMenu(Main, Choice,*SearchChoice)       #drop down button
+    Choice.set(SearchChoice[0])                                 
+    dropdown_choice = OptionMenu(Main, Choice,*SearchChoice)    
     dropdown_choice.grid(row=2,column=1,sticky='ew')
 
-    #fourth row
+    #-----fourth row//Limit Entry box
     label_limit = Label(Main, text="Limit: ").grid(row=3, sticky=W, pady=7)
     entry_limit = Entry(Main,width=40)
     entry_limit.grid(row=3, column=1 , pady=5, sticky='ew')
@@ -60,7 +61,7 @@ def Main(): #GUI
     limit.set(0)
     limitBox = Checkbutton(Main, text="limit Parameter", variable=limit,).grid(row=3, column=2)
 
-    #fifth row
+    #-----fifth row//Format dropdown
     label_format = Label(Main, text="Format: ").grid(row=4, sticky=W, pady=7)
     FormatChoice = StringVar(Main)
     FormatChoice.set(format_list[0])
@@ -70,7 +71,7 @@ def Main(): #GUI
     Format.set(0)
     FormatBox = Checkbutton(Main, text="Format Parameter", variable=Format,).grid(row=4, column=2)
 
-    #sixth
+    #-----sixth row//Color Dropdown
     label_color = Label(Main, text="Color: ").grid(row=5, sticky=W, pady=7)
     ColorChoice = StringVar(Main)
     ColorChoice.set(color_list[0])
@@ -80,7 +81,7 @@ def Main(): #GUI
     Color.set(0)
     ColorBox = Checkbutton(Main, text="Color Parameter", variable=Color,).grid(row=5, column=2)
 
-    #7th row
+    #-----seventh row// Size dropdown
     label_size = Label(Main, text="Size: ").grid(row=6, sticky=W, pady= 7)
     SizeChoice = StringVar(Main)
     SizeChoice.set(size_list[0])
@@ -113,19 +114,19 @@ def Main(): #GUI
                         return
                 Parameter_Dictionary("keywords",searchHistoryVariable,Dict)
                     
-            #store Limit
+            #store Limit into Dict
             LimitEntry = entry_limit.get()
             check_box_store(limit, "limit", LimitEntry, Dict)
 
-            #Store format
+            #Store format into Dict
             FormatEntry = FormatChoice.get()
             check_box_store(Format, "format", FormatEntry, Dict)
     
-            #Store Color
+            #Store Color into Dict
             ColorEntry = ColorChoice.get()
             check_box_store(Color, "color", ColorEntry, Dict)
         
-            #Store size
+            #Store size into Dict
             SizeEntry = SizeChoice.get()
             check_box_store(Size, "size", SizeEntry, Dict)
 
@@ -141,18 +142,21 @@ def Main(): #GUI
             
         except ValueError:
             messagebox.showinfo("wrong info")
-
+            
+    #-----eighth row//Enter Button
     enterEntry = Button(Main, text= "Enter", command=run,bg="yellow")
     enterEntry.grid(row=7,column=1,columnspan=2,sticky='nesw')
 
         
 
+#--------------------FUNCTIONS----------------------------
 
+#store parameters into Dictionary
 def check_box_store(CheckBoxTrue,parameters,value,dictionary):
     if Box(CheckBoxTrue)==True:
         Parameter_Dictionary(parameters, value, dictionary)
 
-#function to store the parameters and values in the dictionary
+#function to store the parameters and values in the Dict
 def Parameter_Dictionary(parameters, value, dictionary):
     dictionary[parameters] = value # parameter : value
 
@@ -163,13 +167,14 @@ def Box(CheckBoxTrue):
         return True
     return False
 
-
+#function to download images
 def googleimage_download(dictionary):
     global Dict
     response =google_images_download.googleimagesdownload()
     arguments = Dict
     paths = response.download(arguments)
 
+#adding each input from the user to the History.txt
 def add_Searchhistory():
     keyword_hist = []
     w = open('History.txt',"a+")
@@ -183,11 +188,13 @@ def add_Searchhistory():
     w.close()
     return keyword_hist
 
+#check if a file exist 
 def existing_file(file_path):
     if os.path.isfile(file_path):
         return True
     return False
 
+#check if the file given is empty or not
 def file_check(txt_file):
     if  os.stat(txt_file).st_size==0:
         return True
@@ -197,7 +204,7 @@ def file_check(txt_file):
     
     
 
-
+#-------------Declare list/dictionary
 Dict = {}
 SearchChoice= []
 
