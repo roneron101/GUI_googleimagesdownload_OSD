@@ -206,7 +206,6 @@ def add_Searchhistory():
     w.close()
     return keyword_hist
 
-
 #check if the file given is empty or not
 def file_check(txt_file):
     if  os.stat(txt_file).st_size==0:
