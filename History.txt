@@ -1,4 +1,2 @@
 dettol
-sony
-phone
-cars
+
